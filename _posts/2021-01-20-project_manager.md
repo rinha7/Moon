@@ -15,4 +15,4 @@ comments: true
 ## Tensorflow 내용 정리
 
 ### 기초공부
- - <a href="/_posts/2020-07-07-start_tf.md">Tensorflow 시작</a>
+ - <a href="/start_tf">Tensorflow 시작</a>
