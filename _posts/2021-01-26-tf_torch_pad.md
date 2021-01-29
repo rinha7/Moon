@@ -5,7 +5,7 @@ date:   2020-07-09
 excerpt: "tf.pad와 torch.pad의 차이"
 tag:
 - Tensorflow 
-- Keras
+- Torch
 - python
 comments: true
 ---
@@ -20,7 +20,7 @@ torch로 된 코드를 keras로 옮기거나, 한쪽만 보다가 다른 쪽의 
 
 <a href="https://www.tensorflow.org/api_docs/python/tf/pad"> tf.pad 공식 문서 </a>
 
-![tf_pad](/assets/img/200126/tf_pad.png)
+![tf_pad](/assets/img/210126/tf_pad.png)
 
 tf.pad의 구성은 다음과 같습니다.
 
@@ -64,7 +64,7 @@ torch의 pad 함수의 공식 문서는 다음과 같습니다.
 
 <a href="https://pytorch.org/docs/stable/nn.functional.html"> torch.nn.functional 공식 문서 </a>
 
-![torch_pad](/assets/img/200126/torch_pad.png)
+![torch_pad](/assets/img/210126/torch_pad.png)
 
 ```
 torch.nn.functional.pad(input, pad, mode='constant', value=0)
