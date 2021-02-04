@@ -14,7 +14,7 @@ comments: true
 ## Image Enhancement란?
 
 ![unet_structure](/assets/img/210202/image_enhance_example.png)
-<figcaption>Image Enhancement 예시</figcaption>
+<figcaption style="text-align: center">Image Enhancement 예시</figcaption>
 
 이미지 Enhancement는 말 그대로 저화질의 이미지를 고화질로 바꾸어주는 것을 말합니다. 해상도를 높여주는 Super Resolution이나, 안개를 제거하는 Denoising,
 흔들림을 보정하는 Deblurring등의 다양한 영상 개서 기법들이 여기에 속할 수 있습니다.
@@ -41,3 +41,5 @@ U-Net의 이러한 특징을 살려 Enhancement에 사용하는 것도 가능합
 <a href="https://github.com/rinha7/Image_Enhancement_Unet">Image Enhancement Unet Repository</a>
 
 위 코드에 사용된 Network의 구조는 다음과 같습니다.
+
+![unet_structure](/assets/img/210202/unet_enhancement_structure.png)
