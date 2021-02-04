@@ -10,7 +10,7 @@ comments: true
 ---
 
 ## 기본적인 Enhancement 내용 정리
- - Image Enhancement란?
+ - <a href="/image_enhance_1st">Image Enhancement란?</a>
 
 ## Image Enhancement Network
  - Unet
