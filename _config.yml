@@ -5,7 +5,7 @@ description:        "Computervision, tf, keras, torch"
 reading_time:       true
 words_per_minute:   200
 logo:               'assets/img/profile/profile.png'
-background:         'assets/img/placeholder-big.jpg'
+background:         'assets/img/placeholder_210207.jpg'
 tiled_bg:           false   # Set this true if you want to tile your background image, otherwise it will be covered
 locale:             en_US
 url:                https://rinha7.github.io

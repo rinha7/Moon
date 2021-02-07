@@ -14,5 +14,6 @@ comments: true
 
 ## Image Enhancement Network
  - Unet
- - Deep Photo Enhancer
- - DeepLPFNet
+ - <a href="/dpe_part1">Deep Photo Enhancer</a> 
+ - Underexposed Photo Enhancement using Deep Illumination Estimation(DeepUPE)
+ -  Deep Local Parametric Filters for Image Enhancement(DeepLPFNet)
