@@ -17,3 +17,4 @@ comments: true
  - <a href="/dpe_part1">Deep Photo Enhancer</a> 
  - Underexposed Photo Enhancement using Deep Illumination Estimation(DeepUPE)
  -  Deep Local Parametric Filters for Image Enhancement(DeepLPFNet)
+ - Learning Enriched Features for Real Image Restoration and Enhancement(mirNET)
