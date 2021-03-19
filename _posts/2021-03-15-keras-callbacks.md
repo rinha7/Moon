@@ -15,7 +15,7 @@ comments: true
 Early Stop이나 Learning Rate Scheduling과 같은 기능을 통해 학습결과에 따라 학습을 멈추거나 학습률을 조정할수도 있습니다.
 이처럼 Callback들을 잘 활용한다면, 딥러닝 학습의 결과를 보다 좋게 만들 수 있기 때문에, 많이 사용되는 callback 4가지를 소개하고, 사용법에 대해 포스팅하였습니다.
 
-<a href="https://keras.io/api/callbacks/">keras official documentation Callbakcs API</a> 
+Keras 공식 설명 페이지 : <a href="https://keras.io/api/callbacks/">keras official documentation Callbakcs API</a> 
 
 ### LearningRateScheduler
 
@@ -102,8 +102,6 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
 
 # 지금까지의 학습에서 가장 높은 acc를 보인 모델이 저장됩니다.
 model.fit(epochs=EPOCHS, callbacks=[model_checkpoint_callback])
-
-
 ```
 
 ### EarlyStopping
