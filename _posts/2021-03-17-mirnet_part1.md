@@ -1,4 +1,3 @@
-
 ---  
 layout: post  
 title:  "Learning Enriched Features for Real Image Restoration and Enhancement 이해하기"  
@@ -18,7 +17,8 @@ tag:
 논문의 링크와 제작자의 코드 깃허브 링크는 아래와 같습니다.
 
 ```  
-논문 주소 :https://arxiv.org/pdf/2003.06792v2.pdf코드 깃허브 : https://github.com/swz30/MIRNet
+논문 주소 :https://arxiv.org/pdf/2003.06792v2.pdf
+코드 깃허브 : https://github.com/swz30/MIRNet
 ```  
 
 ### Introduction
@@ -30,7 +30,7 @@ MIRNet의 핵심이라고 할 수 있습니다. 이러한 방법의 차이는 �
 
 ### Proposed Method
 ![mirnet_fig1](/assets/img/mirnet/fig1.png)
-<figcaption>fig1. MIRNet의 residual recursive 구조 </figcaption>
+<figcaption style="text-align:center">fig1. MIRNet의 residual recursive 구조 </figcaption>
 
 #### 1. RRG(Recursive Residual Group)
 
@@ -42,6 +42,13 @@ MIRNet의 핵심이라고 할 수 있습니다. 이러한 방법의 차이는 �
 
 #### 3. SKFF(Selective Kernel Feature Fusion)
 
-&nbsp; &nbsp; MRB의 구조를 이루고 있는 요소 중 하나인 SKFF는 Feature를
+
+&nbsp; &nbsp; MRB의 구조를 이루고 있는 요소 중 하나인 SKFF는 multi-scale feature를 생성하고, aggregation and selection을 수행합니다. 대부분의 Image Enhancement 구조들이 feature들을 aggregation할때 단순하게 wide-sum이나 concatenation 을 통해 feature들을 합칩니다. 그러나 이러한 구조의 네트워크는 표현력에 한계를 갖습니다. MIRNet에서는 이러한 문제를 해결하기 위해 MRB의 안에서 multi-resolution의 feature들을 합치고, 선택하는 non-linear procedure를 만들었는데, 이를 SKFF라고 부릅니다.
+
+![mirnet_fig2](/assets/img/mirnet/fig2.png)
+<figcaption style="text-align:center">fig2. SKFF </figcaption>
+
+&nbsp; &nbsp; SKFF 모듈은 Fuse와 Select라는 2가지 연산을 통해 동적인 조정을 수행합니다. FIg. 2.의 fuse 연산은 multi-resolution stream들의 정보를 합치며 전역적 기술자(global descriptor)들을 생성한다. select operator는 이 기술자들을 이용하여 feature들의 재보정 연산을 수행한다.
+
 #### 4. DAU(Dual Attention Unit)
 #### 5. Residual Resizing Module
