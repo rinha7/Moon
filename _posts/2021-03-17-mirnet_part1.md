@@ -48,7 +48,24 @@ MIRNet의 핵심이라고 할 수 있습니다. 이러한 방법의 차이는 �
 ![mirnet_fig2](/assets/img/mirnet/fig2.png)
 <figcaption style="text-align:center">fig2. SKFF </figcaption>
 
-&nbsp; &nbsp; SKFF 모듈은 Fuse와 Select라는 2가지 연산을 통해 동적인 조정을 수행합니다. FIg. 2.의 fuse 연산은 multi-resolution stream들의 정보를 합치며 전역적 기술자(global descriptor)들을 생성한다. select operator는 이 기술자들을 이용하여 feature들의 재보정 연산을 수행한다.
+&nbsp; &nbsp; SKFF 모듈은 Fuse와 Select라는 2가지 연산을 통해 동적인 조정을 수행합니다. FIg. 2.의 fuse 연산은 multi-resolution stream들의 정보를 합치며 전역적 기술자(global descriptor)들을 생성한다. select operator는 이 기술자들을 이용하여 feature map들의 aggregation에 따른 재보정 연산을 수행합니다.
+
+&nbsp; nbsp; Fuse 연산과 Select 연산의 자세한 설명은 다음과 같습니다.
+1. Fuse : SKFF의 입력은 3개의 다른 scale의 정보를 갖고 있는 parallel convolution streams입니다.  SKFF에서는 먼저 이 3개의 multi-scale feature를 wise-sum을 통해 하나로 통합합니다. 그리고 global average pooling을 spatial dimension에 적용하여 벡터화하고, 이를 다시 channel down scaling convolution layer를 통해 작은 크기의 feature $$z$$를 생성합니다. 최종적으로, $$z$$를 3개의 평행한 channel upscalling convolution layer들을 통해 3개의 특징 기술자(feature descriptor) $$v1,v2,v3$$(1x1xC 크기의 벡터)를 얻게됩니다.
+2. Select : select 단계는 fuse 단계의 이후로, $$v1,v2,v3$$ 3개의 벡터를 softmax function을 통해 yielding attention $$s1,s2,s3$$로 변환합니다. 이들은 multi-scale feature map들을 재조정하는데 사용됩니다.
+
+&nbsp;&nbsp; SKFF의 전체적인 프로세스는 feature들을 재조정하고, 그 집합을 만드는 것입니다. SKFF는 단순히 concatenate 하는 것보다 적은 파라미터를 사용하면서도 조금 더 좋은 결과를 만들어냅니다.
 
 #### 4. DAU(Dual Attention Unit)
+
+&nbsp;&nbsp; SKFF block은 multi-resolution branch들을 통해 information들을 융합시킵니다. 여기에 더해 spatial and channel dimension 간의 feature tensor 간의 정보를 공유할 구조가 필요합니다. MIRNet에서는 이 문제를 해결하기 위해 최근의 low-level vision 연구들을 기반으로 Dual Attention Unit, 즉 DAU라고 불리는 구조를 삽입하였습니다. DAU의 구조는 fig. 3.과 같습니다.
+![mirnet_fig3](/assets/img/mirnet/fig3.png)
+<figcaption style="text-align:center">fig3. DAU의 구조 </figcaption>
+
+&nbsp; &nbsp; DAU 활용성이 적은 feature들의 영향을 줄이고, 정보가 많은 feature들이 더 많이 통과되도록 합니다. 이러한 feature들의 재조정은 다음에 소개할 channel attention과 spatial attention 구조에 의해 이루어집니다.
+1. Channel Attention : figure 1.을 보면 MRB 구조에서 DAU는 SKFF의 앞에 한 번, 뒤에 한 번 scale당 총 2번씩 사용되는 것을 확인할 수 있다. Channel Attention branch는 여기서 convolution feature map 간의 채널 간 연관성을 squeeze와 excitation 연산을 통해 짜낸다. 주어진 feature map $$M \in {\mathbb{R}^{H\times W \times C}}$$에서 global context를 encoding 하기 위해 global average pooling 연산을 수행하고, 이 유연한 특징 기술자(feature descriptor) $$ d \in {\mathbb{R}^{1 \times 1 \times C}}$$가 된다. 이 $$d$$는 2개의 convolution layer를 통과하고 sigmoid 활성화함수를 통해 $$\hat{d} \in {\mathbb{R}^{1 \times 1 \times C}}$$가 되고, channel attention 의 output branch는 이 $$\hat{d}$$를 $$M$$ 의 크기로 resize한 것이 된다.
+2. Spatial Attention :
+
 #### 5. Residual Resizing Module
+
+### Experiments
