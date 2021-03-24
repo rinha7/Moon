@@ -1,4 +1,4 @@
----  
+---
 layout: post  
 title:  "Learning Enriched Features for Real Image Restoration and Enhancement 이해하기"  
 date:   2021-03-17  
@@ -9,7 +9,7 @@ tag:
 - python
 - IE  
   comments: true
----  
+---
 
 ## Learning Enriched Features for Real Image Restoration and Enhancement
 
@@ -68,4 +68,10 @@ MIRNet의 핵심이라고 할 수 있습니다. 이러한 방법의 차이는 �
 
 #### 5. Residual Resizing Module
 
+![mirnet_fig4](/assets/img/mirnet/fig4.png)
+<figcaption style="text-align:center">fig4. Residual resizing modules </figcaption>
+
+&nbsp; &nbsp; MIRNet은 skip connection이 존재하는 recursive residual design으로 되어있습니다. 구조 내에서 residual nature를 유지하기 위해서는 resize 시에도 그 특성이 보존되도록 해야합니다. Fig.4.는 MIRNet에서 사용하는 resize method인 residual resizing의 구조에 대해서 보여주고 있습니다. MRB에서 feature map의 크기는 바뀌어 3개의 stream들로 나누어집니다. 이 때 input resolution index $$i$$와 output resolution index $$j$$를 받게 되는데 만약 $$i <j$$이면 downsampling을 수행하고, 그 반대라면 upsampling을 수행합니다. $$2 \times$$ downsampling을 수행하기 위해, Fig.4.(a)의 구조를 사용하였고, 만약 $$4 \times$$의 downsamping을 수행한다면 이 구조를 반복적으로 2번 적용하면 됩니다. 이와 마찬가지로 $$ 2  \times $$ upsampling을 진행하기 위해서는 Fig.4.(b)의 구조를 한 번, $$4 \times$$의 upsampling을 필요로 하면 이 구조를 반복하여 2번 수행함으로서 원하는 결과를 얻을 수 있습니다.
+
 ### Experiments
+&nbsp; &nbsp; 이 section 에서는 MIRNet으로 만들어진 결과들에 대한 양적인 평가와 다른 method들과의 비교들로 이루어져 있습니다. 논문에서는 image denoising, super-resolution, image enhancement에 대한 결과들이 모두 나와있는데, 여기서는 image enhancement에 관한 부분만 다루도록 하겠습니다.
