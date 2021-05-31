@@ -50,7 +50,7 @@ comments: true
 최근에는 딥러닝 기반의 method들도 나오고 있는데, autoencoder를 사용하는 방법이나, feed-foward convolution network를 이용하는 방법들도 있습니다. 하지만, 이러한 방법들도 여전히 blind image denoising의 수행에는 어려움을 갖고 있고, 많은 파라미터를 요구하기 때문에 학습에 어려움을 겪습니다. Recurrent를 통해 이러한 문제는 어느정도 해결할 수 있지만,
 이미지의 다른 영역이 다른 noise 수준을 갖는다는 것을 명시하고, 이에 대해 처리하는 네트워크는 적습니다.
 
-![kind_fig2](/assets/img/kind/fig2.png)
+![kind_fig2](/assets/img/kind/fig2.PNG)
 
 ### Methodology
 
@@ -64,7 +64,19 @@ comments: true
  1. Layer Decomposition
     Plain method들에 대해 설명하며 문제로 꼽았던 점 중 하나가 실제 조명에 대해 고려하지 않는다는 점이었습니다. 이를 위한 해결책은 조명 정보(illumination information)에서 얻을 수 있습니다. Input으로부터 조명 정보를 잘 뽑아낸다면, degradation을 지울 수 있거나, 복원할 수 있는 detail에 대해 알 수 있습니다.
     Retinex theory에서는 이미지 $I$는 2가지 구성 요소의 집합이라고 할 수 있는데, reflectance $R$과 illumination $L$이 그 구성요소입니다. 
- 2. f 
+ 2. Data Usage & Priors
+    실제 이미지에 대해여 light condition이 잘 정의된 ground-truth 이미지는 적거나, 없는 경우가 많습니다.
+    Image에 degradation이 적용되어 있지 않다고 가정할 때, 어떤 scene의 다른 여러개의 사진들이 같은 reflectance를 공유해야 합니다. 
+    반면에 Illumination map은 집중적으로 변화하는 구간은 있지만, 상호 연관성이 존재하는 구조입니다.
+    실제 상황에서는 low-light 영상의 degradation이 밝은 이미지보다 나쁜 경우가 많으며, 이는 reflectance 값에 반영되게 됩니다.
+    이에 따라, 밝은 이미지를 reference로 degraded low-light one을 복원하는 학습에 사용할 수 있다는 것을 알 수 있습니다. 인공적인(synthesize) data를 사용하지 않는 것은
+    degradation은 단순한 형태가 아니며, 다른 센서에 따라 변화하기 때문에 인공적으로 이를 재현하는 것은 어렵기 때문에 사용하지 않습니다.
+ 3. Illuminatoin Guided Reflectance Restoration.
+    분해된 reflectance에서, 어두운 illumination 의 오염은 밝은곳에 비해 더 무겁습니다. 수학적으로, 저하된(degraded) low-light 영상은 $I=R\circL+E$(E는 오염된 요소)로 표현할 수 있습니다. 이를 수학적으로 간단하게 풀면 다음 수식을 얻을 수 있는데
+    $$I=R\circL+E=\tilde{R}\circL=(R+\tilde{E)\circL=R\circL+\tilde{E}\circL,$$
+    
+    
+    
 
 
 ### Experiments
