@@ -93,8 +93,9 @@ $$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{
 위에 소개한 consideration & motivation을 바탕으로, 논문의 저자들은 KinD라는, kindling the darkness deep neural network를 설계하였습니다. 이 아래에는 3개의 subnet에 대한 설명과 기능적 관점에 대한 세부사항에 대하여 묘사합니다.
 
 1. Layer Decomposition Net  
-   하나의 이미지로부터 2개의 구성요소를 복원하는 것은 설정이 잘못된 문제라고 할 수 있습니다. Ground-truth 정보가 없다면, 잘 디자인 된 제한적인 로스가 중요합니다. 따라서, KinD에서는 2개의 다른 빛 세기 / 노출 정도를 가진 이미지 $[I_l,I_h]$를 준비합니다.  특정 장면의 reflectance는 설 다른 image들에 거쳐 공유해야한다는 것을 생각하면, 분해한 reflectance pair $[R_l,R_h]$는 비슷해야 합니다.  더 나아가서, illumination map $[L_l,L_h]$ 는 각각이 매끄럽고, 서로간에 일관성이 있어야 합니다. 이를 위해서 논문에서는 Loss $ {L_rs^LD := ||R_l-R_h||_1} $ 을 사용하여 반사율 유사도(reflectance similarity)를 정규화합니다.(${|| ||_1}:wq:
-   $ 은 $l_1$ norm을 의미함)  Illumination의 smoothness는 $L_{is}^{LD} := {\lVert {\nabla L_I \over max(| \nabla I_l , \epsilon |)}\rVert}_1 + {\lVert {\nabla L_h \over max(| \nabla I_h , \epsilon |)}\rVert}_1$ $\nabla$는 $\nabla x$ 와 $\nabla y$의 방향을 포함하는 1차 미분 연산을 의미한다.
+   하나의 이미지로부터 2개의 구성요소를 복원하는 것은 설정이 잘못된 문제라고 할 수 있습니다. Ground-truth 정보가 없다면, 잘 디자인 된 제한적인 로스가 중요합니다. 따라서, KinD에서는 2개의 다른 빛 세기 / 노출 정도를 가진 이미지 $[I_l,I_h]$를 준비합니다.
+   특정 장면의 reflectance는 설 다른 image들에 거쳐 공유해야한다는 것을 생각하면, 분해한 reflectance pair $[R_l,R_h]$는 비슷해야 합니다.  더 나아가서, illumination map $[L_l,L_h]$ 는 각각이 매끄럽고, 서로간에 일관성이 있어야 합니다.
+   이를 위해서 논문에서는 Loss ${L_{is}^{LD} := \lVert R_l - R_h\rVert_1 }$ 을 사용하여 반사율 유사도(reflectance similarity)를 정규화합니다.(${\lvert \rvert_1}$ 은 $l_1$ norm을 의미함)  Illumination의 smoothness는 $L_{is}^{LD} := {\lVert {\nabla L_I \over max(| \nabla I_l , \epsilon |)}\rVert}_1 + {\lVert {\nabla L_h \over max(| \nabla I_h , \epsilon |)}\rVert}_1$ $\nabla$는 $\nabla x$ 와 $\nabla y$의 방향을 포함하는 1차 미분 연산을 의미합니다.
     
     
  2. Reflectance Restoration Net
