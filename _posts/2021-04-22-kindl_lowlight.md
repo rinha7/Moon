@@ -50,7 +50,6 @@ comments: true
 최근에는 딥러닝 기반의 method들도 나오고 있는데, autoencoder를 사용하는 방법이나, feed-foward convolution network를 이용하는 방법들도 있습니다. 하지만, 이러한 방법들도 여전히 blind image denoising의 수행에는 어려움을 갖고 있고, 많은 파라미터를 요구하기 때문에 학습에 어려움을 겪습니다. Recurrent를 통해 이러한 문제는 어느정도 해결할 수 있지만,
 이미지의 다른 영역이 다른 noise 수준을 갖는다는 것을 명시하고, 이에 대해 처리하는 네트워크는 적습니다.
 
-![kind_fig2](/assets/img/kind/fig2.PNG)
 
 ### Methodology
 
@@ -73,7 +72,7 @@ comments: true
     degradation은 단순한 형태가 아니며, 다른 센서에 따라 변화하기 때문에 인공적으로 이를 재현하는 것은 어렵기 때문에 사용하지 않습니다.
  3. Illuminatoin Guided Reflectance Restoration.
     분해된 reflectance에서, 어두운 illumination 의 오염은 밝은곳에 비해 더 무겁습니다. 수학적으로, 저하된(degraded) low-light 영상은 $I=R \circ L+E$(E는 오염된 요소)로 표현할 수 있습니다. 이를 수학적으로 간단하게 풀면 다음 수식을 얻을 수 있는데
-$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$
+$$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$$
     로 표현할 수 있습니다. 여기서 $\tilde{R}$ 은 오염된 reflectance를 말하며, $\tilde{E}$는 분리된 illumination의 degradation을 의미합니다.
     예를들어, White Gaussian noise $E ~ \mathcal{N}(0,\sigma^2)$를 적용한다면 $\tilde{E}$의 분포는 더 복잡해질 것이고, $L$에 더 강하게 영향을 받게 됩니다.
     이는 즉, reflectance의 복원은 단순하게 일괄적으로 적용할 수 있는 것이 아니며, illumination map이 reflectance 복원에 좋은 guide 역할을 해줄 수 있다는 것을 의미합니다.(어떻게?)
@@ -85,14 +84,19 @@ $$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E
     Fusion 기반의 방법들은 fixed fusion mode로 인해서 빛의 세기를 조정하는 기능이 부족합니다.(왜??) 두 번째 옵션을 채택할 경우(light level appointment를 말하는듯) 데이터 셋에는 목표 수준의 영상들이 포함되어야 하므로
     학습의 유연성이 제한되게 됩니다. Gamma correction의 경우, 이는 각각 다른 $\gamma$값들을 통해서 목표에 도달할 수 잇찌만, light level과의 상관관계를 반영하는 것은 불가능합니다.
     이 논문은 사용자가 임의의 빛과 노출 수준을 지정할 수 있도록 허용하는 유연한 mapping function을 실제 데이터를 통해 학습할 수 있도록 합니다.
-    
-    
+
+
+![kind_fig2](/assets/img/kind/fig2.PNG)
     
 #### KinD Network
 
 위에 소개한 consideration & motivation을 바탕으로, 논문의 저자들은 KinD라는, kindling the darkness deep neural network를 설계하였습니다. 이 아래에는 3개의 subnet에 대한 설명과 기능적 관점에 대한 세부사항에 대하여 묘사합니다.
 
- 1. Layer Decomposition Net
+1. Layer Decomposition Net  
+   하나의 이미지로부터 2개의 구성요소를 복원하는 것은 설정이 잘못된 문제라고 할 수 있습니다. Ground-truth 정보가 없다면, 잘 디자인 된 제한적인 로스가 중요합니다. 따라서, KinD에서는 2개의 다른 빛 세기 / 노출 정도를 가진 이미지 $[I_l,I_h]$를 준비합니다.  특정 장면의 reflectance는 설 다른 image들에 거쳐 공유해야한다는 것을 생각하면, 분해한 reflectance pair $[R_l,R_h]$는 비슷해야 합니다.  더 나아가서, illumination map $[L_l,L_h]$ 는 각각이 매끄럽고, 서로간에 일관성이 있어야 합니다. 이를 위해서 논문에서는 Loss $L_rs^LD := ||R_l-R_h||_1$ 을 사용하여 반사율 유사도(reflectance similarity)를 정규화합니다.($|| ||$_1 은 $l_1$ norm을 의미함)  Illumination의 smoothness는 $L_{is}^{LD} := {\lVert {\nabla L_I \over max(| \nabla I_l , \epsilon |)}\rVert}_1 + {\lVert {\nabla L_h \over max(| \nabla I_h , \epsilon |)}\rVert}_1$ $\nabla$는 $\nabla x$ 와 $\nabla y$의 방향을 포함하는 1차 미분 연산을 의미한다.
+    
+    
+ 2. Reflectance Restoration Net
     
     
 ### Experiments
