@@ -64,12 +64,8 @@ comments: true
     Plain method들에 대해 설명하며 문제로 꼽았던 점 중 하나가 실제 조명에 대해 고려하지 않는다는 점이었습니다. 이를 위한 해결책은 조명 정보(illumination information)에서 얻을 수 있습니다. Input으로부터 조명 정보를 잘 뽑아낸다면, degradation을 지울 수 있거나, 복원할 수 있는 detail에 대해 알 수 있습니다.
     Retinex theory에서는 이미지 $I$는 2가지 구성 요소의 집합이라고 할 수 있는데, reflectance $R$과 illumination $L$이 그 구성요소입니다. 
  2. Data Usage & Priors
-    실제 이미지에 대해여 light condition이 잘 정의된 ground-truth 이미지는 적거나, 없는 경우가 많습니다.
-    Image에 degradation이 적용되어 있지 않다고 가정할 때, 어떤 scene의 다른 여러개의 사진들이 같은 reflectance를 공유해야 합니다. 
-    반면에 Illumination map은 집중적으로 변화하는 구간은 있지만, 상호 연관성이 존재하는 구조입니다.
-    실제 상황에서는 low-light 영상의 degradation이 밝은 이미지보다 나쁜 경우가 많으며, 이는 reflectance 값에 반영되게 됩니다.
-    이에 따라, 밝은 이미지를 reference로 degraded low-light one을 복원하는 학습에 사용할 수 있다는 것을 알 수 있습니다. 인공적인(synthesize) data를 사용하지 않는 것은
-    degradation은 단순한 형태가 아니며, 다른 센서에 따라 변화하기 때문에 인공적으로 이를 재현하는 것은 어렵기 때문에 사용하지 않습니다.
+
+분해된 reflectance에서, 어두운 illumination 의 오염은 밝은곳에 비해 더 무겁습니다. 수학적으로, 저하된(degraded) low-light 영상은 $I=R \circ L+E$(E는 오염된 요소)로 표현할 수 있습니다. 이를 수학적으로 간단하게 풀면 다음 수식을 얻을 수 있는데  $$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$ 로 표현할 수 있습니다. 여기서 $\tilde{R}$ 은 오염된 reflectance를 말하며, $\tilde{E}$는 분리된 illumination의 degradation을 의미합니다.  예를들어, White Gaussian noise $E \sim \mathcal{N}(0,\sigma^2)$를 적용한다면 $\tilde{E}$의 분포는 더 복잡해질 것이고, $L$에 더 강하게 영향을 받게 됩니다.    이는 즉, reflectance의 복원은 단순하게 일괄적으로 적용할 수 있는 것이 아니며, illumination map이 reflectance 복원에 좋은 guide 역할을 해줄 수 있다는 것을 의미합니다.(어떻게?)  그렇다면, 직접적으로 $I$에서 $\tilde{E}$ 를 지우는 방법을 사용하는 것에 대해 생각해볼 수도 있습니다. 한 가지 이유로, 불균등 문제가 여전히 남아있습니다.  다른 관점에서 보자면, 고유한 세부 요소들이 noise들과 혼동될 수 있습니다. reflectance 외의 점으로는, 다양한 L(illumination) degradation 제거에 있어서 적절한 reference를 가지고 있지 않기 때문에, 유사한 분석을 하게 되는데, 이는 color-distortion과 같은 다른 유형의 degradtion을 제공하게 됩니다.
  3. Illuminatoin Guided Reflectance Restoration.
     분해된 reflectance에서, 어두운 illumination 의 오염은 밝은곳에 비해 더 무겁습니다. 수학적으로, 저하된(degraded) low-light 영상은 $I=R \circ L+E$(E는 오염된 요소)로 표현할 수 있습니다. 이를 수학적으로 간단하게 풀면 다음 수식을 얻을 수 있는데
 $$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$$
@@ -96,8 +92,10 @@ $$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{
    하나의 이미지로부터 2개의 구성요소를 복원하는 것은 설정이 잘못된 문제라고 할 수 있습니다. Ground-truth 정보가 없다면, 잘 디자인 된 제한적인 로스가 중요합니다. 따라서, KinD에서는 2개의 다른 빛 세기 / 노출 정도를 가진 이미지 $[I_l,I_h]$를 준비합니다.
    특정 장면의 reflectance는 설 다른 image들에 거쳐 공유해야한다는 것을 생각하면, 분해한 reflectance pair $[R_l,R_h]$는 비슷해야 합니다.  더 나아가서, illumination map $[L_l,L_h]$ 는 각각이 매끄럽고, 서로간에 일관성이 있어야 합니다.
    이를 위해서 논문에서는 Loss ${L_{is}^{LD} := \lVert R_l - R_h\rVert_1 }$ 을 사용하여 반사율 유사도(reflectance similarity)를 정규화합니다.(${\lvert \rvert_1}$ 은 $l_1$ norm을 의미함)  Illumination의 smoothness는 $L_{is}^{LD} := {\lVert {\nabla L_I \over max(| \nabla I_l , \epsilon |)}\rVert}_1 + {\lVert {\nabla L_h \over max(| \nabla I_h , \epsilon |)}\rVert}_1$ $\nabla$는 $\nabla x$ 와 $\nabla y$의 방향을 포함하는 1차 미분 연산을 의미합니다.
-    
-    
+   거기에 $\epsilon$은 0.001 정도의 작은 상수값을 넣어 0으로 나누어지는걸 방지하고,  $| \cdot |$는 절대값을 의미합니다. 이 smoothness term은 입력에 대한  illumination 구조의 연관성을 측정합니다. 만약 $I$의 edge부분이라면, penalty loss $L$은 작은 값이 될 것이고, 평평한 부분이라면, 페널티가 커지게 됩니다. 상호 일관성에 의해서, $\mathcal{L}_{mc}^{LD}:={\lVert M\circ exp(-c\cdot M) \rVert}_1$ 이라는 Loss를 채택했고 여기서 $M$은 $M := \lvert \nabla L_l \rvert+\lvert \nabla L_h \rvert$를 말합니다. Figure 4는 $u \cdot exp(-c \cdot u)$ 는 함수의 동작에 대해 보여주고 있으며, 여기서 $c$는 함수의 모양을 제어하는 파라미터입니다. Figure 4를 통해 볼 수 있듯이, penalty가 처음에는 증가하다가 $u$가 증가함에 따라 0을 향해 떨어집니다. 이러한 특성이 강한 상호 모서리?(원문 : mutual edge)가 약한 쪽에 비해 학습에서도 보존되는 일관성(mutual consistency)에 적합하다고 할 수 있습니다. 그리고 c=0으로 설정하는 것은 M을 단순한 $l^1$ loss의 형태로 만드는 것을 알 수 있었습니다. 게다가, 분리된 2개의 레이어가 reconstruction error($\mathcal{L}^{LD}_{rec}:=  {\lVert {I_l - R_l \circ L_l}  \rVert }_1+{\lVert {I_h - R_h \circ L_h}  \rVert }_1$)에 의해 제한된 입력 이미지를 재구성해야합니다. 결과적으로 decomposition net의 총 loss는 다음과 같게 됩니다.
+   $$ \mathcal{L}^{LD}:= \mathcal{L}^{LD}_{rec}+0.01\mathcal{L}^{LD}_{rs}+0.15\mathcal{L}^{LD}_{is}+0.2\mathcal{L}^{LD}_{mc}$$
+   decomposition network의 레이어는 각각 reflectance와 illumination에 대응하는 가지들을 포함하고 있으며, reflectance 를 담당하는 부분은 전형적인 5-layer U-Net (conv와  sigmoid) 구조로 되어있고, illumination을 담당하는 부분은 2개의 conv+ReLU layer들과 reflectance 가지에서 넘어오는 부분과 합치는 conv와 concat 레이어로 구성(illumination으로부터 texture를 분리하기 위해서(??))되어 있다. 이는 최종적으로 conv+ sigmoid  layer로 합쳐져 illumination을 분해하게 된다.
+
  2. Reflectance Restoration Net
     
     
