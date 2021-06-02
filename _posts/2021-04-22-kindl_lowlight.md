@@ -88,15 +88,32 @@ $$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{
 
 위에 소개한 consideration & motivation을 바탕으로, 논문의 저자들은 KinD라는, kindling the darkness deep neural network를 설계하였습니다. 이 아래에는 3개의 subnet에 대한 설명과 기능적 관점에 대한 세부사항에 대하여 묘사합니다.
 
+![kind_fig4](/assets/img/kind/fig4.PNG)
+
 1. Layer Decomposition Net  
    하나의 이미지로부터 2개의 구성요소를 복원하는 것은 설정이 잘못된 문제라고 할 수 있습니다. Ground-truth 정보가 없다면, 잘 디자인 된 제한적인 로스가 중요합니다. 따라서, KinD에서는 2개의 다른 빛 세기 / 노출 정도를 가진 이미지 $[I_l,I_h]$를 준비합니다.
    특정 장면의 reflectance는 설 다른 image들에 거쳐 공유해야한다는 것을 생각하면, 분해한 reflectance pair $[R_l,R_h]$는 비슷해야 합니다.  더 나아가서, illumination map $[L_l,L_h]$ 는 각각이 매끄럽고, 서로간에 일관성이 있어야 합니다.
    이를 위해서 논문에서는 Loss ${L_{is}^{LD} := \lVert R_l - R_h\rVert_1 }$ 을 사용하여 반사율 유사도(reflectance similarity)를 정규화합니다.(${\lvert \rvert_1}$ 은 $l_1$ norm을 의미함)  Illumination의 smoothness는 $L_{is}^{LD} := {\lVert {\nabla L_I \over max(| \nabla I_l , \epsilon |)}\rVert}_1 + {\lVert {\nabla L_h \over max(| \nabla I_h , \epsilon |)}\rVert}_1$ $\nabla$는 $\nabla x$ 와 $\nabla y$의 방향을 포함하는 1차 미분 연산을 의미합니다.
-   거기에 $\epsilon$은 0.001 정도의 작은 상수값을 넣어 0으로 나누어지는걸 방지하고,  $| \cdot |$는 절대값을 의미합니다. 이 smoothness term은 입력에 대한  illumination 구조의 연관성을 측정합니다. 만약 $I$의 edge부분이라면, penalty loss $L$은 작은 값이 될 것이고, 평평한 부분이라면, 페널티가 커지게 됩니다. 상호 일관성에 의해서, $\mathcal{L}_{mc}^{LD}:={\lVert M\circ exp(-c\cdot M) \rVert}_1$ 이라는 Loss를 채택했고 여기서 $M$은 $M := \lvert \nabla L_l \rvert+\lvert \nabla L_h \rvert$를 말합니다. Figure 4는 $u \cdot exp(-c \cdot u)$ 는 함수의 동작에 대해 보여주고 있으며, 여기서 $c$는 함수의 모양을 제어하는 파라미터입니다. Figure 4를 통해 볼 수 있듯이, penalty가 처음에는 증가하다가 $u$가 증가함에 따라 0을 향해 떨어집니다. 이러한 특성이 강한 상호 모서리?(원문 : mutual edge)가 약한 쪽에 비해 학습에서도 보존되는 일관성(mutual consistency)에 적합하다고 할 수 있습니다. 그리고 c=0으로 설정하는 것은 M을 단순한 $l^1$ loss의 형태로 만드는 것을 알 수 있었습니다. 게다가, 분리된 2개의 레이어가 reconstruction error($\mathcal{L}^{LD}_{rec}:=  {\lVert {I_l - R_l \circ L_l}  \rVert }_1+{\lVert {I_h - R_h \circ L_h}  \rVert }_1$)에 의해 제한된 입력 이미지를 재구성해야합니다. 결과적으로 decomposition net의 총 loss는 다음과 같게 됩니다.
-   $$ \mathcal{L}^{LD}:= \mathcal{L}^{LD}_{rec}+0.01\mathcal{L}^{LD}_{rs}+0.15\mathcal{L}^{LD}_{is}+0.2\mathcal{L}^{LD}_{mc}$$
-   decomposition network의 레이어는 각각 reflectance와 illumination에 대응하는 가지들을 포함하고 있으며, reflectance 를 담당하는 부분은 전형적인 5-layer U-Net (conv와  sigmoid) 구조로 되어있고, illumination을 담당하는 부분은 2개의 conv+ReLU layer들과 reflectance 가지에서 넘어오는 부분과 합치는 conv와 concat 레이어로 구성(illumination으로부터 texture를 분리하기 위해서(??))되어 있다. 이는 최종적으로 conv+ sigmoid  layer로 합쳐져 illumination을 분해하게 된다.
+   거기에 $\epsilon$은 0.001 정도의 작은 상수값을 넣어 0으로 나누어지는걸 방지하고,  $| \cdot |$는 절대값을 의미합니다. 이 smoothness term은 입력에 대한  illumination 구조의 연관성을 측정합니다.
+   만약 $I$의 edge부분이라면, penalty loss $L$은 작은 값이 될 것이고, 평평한 부분이라면, 페널티가 커지게 됩니다.
+   상호 일관성에 의해서, $\mathcal{L}_{mc}^{LD}:={\lVert M\circ exp(-c\cdot M) \rVert}_1$ 이라는 Loss를 채택했고 여기서 $M$은 $M := \lvert \nabla L_l \rvert+\lvert \nabla L_h \rvert$를 말합니다.
+   Figure 4는 $u \cdot exp(-c \cdot u)$ 는 함수의 동작에 대해 보여주고 있으며, 여기서 $c$는 함수의 모양을 제어하는 파라미터입니다. Figure 4를 통해 볼 수 있듯이, penalty가 처음에는 증가하다가 $u$가 증가함에 따라 0을 향해 떨어집니다.
+   이러한 특성이 강한 상호 모서리?(원문 : mutual edge)가 약한 쪽에 비해 학습에서도 보존되는 일관성(mutual consistency)에 적합하다고 할 수 있습니다. 그리고 c=0으로 설정하는 것은 M을 단순한 $l^1$ loss의 형태로 만드는 것을 알 수 있었습니다.
+   게다가, 분리된 2개의 레이어가 reconstruction error($\mathcal{L}^{LD}_{rec}:=  {\lVert {I_l - R_l \circ L_l}  \rVert }_1+{\lVert {I_h - R_h \circ L_h}  \rVert }_1$)에 의해 제한된 입력 이미지를 재구성해야합니다.
+   결과적으로 decomposition net의 총 loss는 다음과 같게 됩니다.
+   
+   $ \mathcal{L}^{LD}:= \mathcal{L}^{LD}_{rec}+0.01\mathcal{L}^{LD}_{rs}+0.15\mathcal{L}^{LD}_{is}+0.2\mathcal{L}^{LD}_{mc}$
+
+   decomposition network의 레이어는 각각 reflectance와 illumination에 대응하는 가지들을 포함하고 있으며, reflectance 를 담당하는 부분은 전형적인 5-layer U-Net (conv와  sigmoid) 구조로 되어있고,
+   illumination을 담당하는 부분은 2개의 conv+ReLU layer들과 reflectance 가지에서 넘어오는 부분과 합치는 conv와 concat 레이어로 구성(illumination으로부터 texture를 분리하기 위해서(??))되어 있습니다.
+   이는 최종적으로 conv+ sigmoid  layer로 합쳐져 illumination을 분해하는 역할을 수행합니다.
+
+![kind_fig3](/assets/img/kind/fig3.PNG)
+
+![kind_fig5](/assets/img/kind/fig5.PNG)
 
  2. Reflectance Restoration Net
+   Low image에서 뽑은 reflectance map들은, Figure 3과 Figure 5에서 보이는 것처럼 밝은 이미지에 비해 degradation의 영향을 더 많이 받습니다. 
     
     
 ### Experiments
