@@ -65,10 +65,12 @@ comments: true
     Retinex theory에서는 이미지 $I$는 2가지 구성 요소의 집합이라고 할 수 있는데, reflectance $R$과 illumination $L$이 그 구성요소입니다. 
  2. Data Usage & Priors
 
-분해된 reflectance에서, 어두운 illumination 의 오염은 밝은곳에 비해 더 무겁습니다. 수학적으로, 저하된(degraded) low-light 영상은 $I=R \circ L+E$(E는 오염된 요소)로 표현할 수 있습니다. 이를 수학적으로 간단하게 풀면 다음 수식을 얻을 수 있는데  $$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$ 로 표현할 수 있습니다. 여기서 $\tilde{R}$ 은 오염된 reflectance를 말하며, $\tilde{E}$는 분리된 illumination의 degradation을 의미합니다.  예를들어, White Gaussian noise $E \sim \mathcal{N}(0,\sigma^2)$를 적용한다면 $\tilde{E}$의 분포는 더 복잡해질 것이고, $L$에 더 강하게 영향을 받게 됩니다.    이는 즉, reflectance의 복원은 단순하게 일괄적으로 적용할 수 있는 것이 아니며, illumination map이 reflectance 복원에 좋은 guide 역할을 해줄 수 있다는 것을 의미합니다.(어떻게?)  그렇다면, 직접적으로 $I$에서 $\tilde{E}$ 를 지우는 방법을 사용하는 것에 대해 생각해볼 수도 있습니다. 한 가지 이유로, 불균등 문제가 여전히 남아있습니다.  다른 관점에서 보자면, 고유한 세부 요소들이 noise들과 혼동될 수 있습니다. reflectance 외의 점으로는, 다양한 L(illumination) degradation 제거에 있어서 적절한 reference를 가지고 있지 않기 때문에, 유사한 분석을 하게 되는데, 이는 color-distortion과 같은 다른 유형의 degradtion을 제공하게 됩니다.
+    분해된 reflectance에서, 어두운 illumination 의 오염은 밝은곳에 비해 더 무겁습니다. 수학적으로, 저하된(degraded) low-light 영상은 $I=R \circ L+E$(E는 오염된 요소)로 표현할 수 있습니다. 이를 수학적으로 간단하게 풀면 다음 수식을 얻을 수 있는데  $$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$ 로 표현할 수 있습니다. 여기서 $\tilde{R}$ 은 오염된 reflectance를 말하며, $\tilde{E}$는 분리된 illumination의 degradation을 의미합니다.  예를들어, White Gaussian noise $E \sim \mathcal{N}(0,\sigma^2)$를 적용한다면 $\tilde{E}$의 분포는 더 복잡해질 것이고, $L$에 더 강하게 영향을 받게 됩니다.    이는 즉, reflectance의 복원은 단순하게 일괄적으로 적용할 수 있는 것이 아니며, illumination map이 reflectance 복원에 좋은 guide 역할을 해줄 수 있다는 것을 의미합니다.(어떻게?)  그렇다면, 직접적으로 $I$에서 $\tilde{E}$ 를 지우는 방법을 사용하는 것에 대해 생각해볼 수도 있습니다. 한 가지 이유로, 불균등 문제가 여전히 남아있습니다.  다른 관점에서 보자면, 고유한 세부 요소들이 noise들과 혼동될 수 있습니다. reflectance 외의 점으로는, 다양한 L(illumination) degradation 제거에 있어서 적절한 reference를 가지고 있지 않기 때문에, 유사한 분석을 하게 되는데, 이는 color-distortion과 같은 다른 유형의 degradtion을 제공하게 됩니다.
  3. Illuminatoin Guided Reflectance Restoration.
     분해된 reflectance에서, 어두운 illumination 의 오염은 밝은곳에 비해 더 무겁습니다. 수학적으로, 저하된(degraded) low-light 영상은 $I=R \circ L+E$(E는 오염된 요소)로 표현할 수 있습니다. 이를 수학적으로 간단하게 풀면 다음 수식을 얻을 수 있는데
-$$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$$
+    
+    $$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{E} \circ L,$$
+
     로 표현할 수 있습니다. 여기서 $\tilde{R}$ 은 오염된 reflectance를 말하며, $\tilde{E}$는 분리된 illumination의 degradation을 의미합니다.
     예를들어, White Gaussian noise $E ~ \mathcal{N}(0,\sigma^2)$를 적용한다면 $\tilde{E}$의 분포는 더 복잡해질 것이고, $L$에 더 강하게 영향을 받게 됩니다.
     이는 즉, reflectance의 복원은 단순하게 일괄적으로 적용할 수 있는 것이 아니며, illumination map이 reflectance 복원에 좋은 guide 역할을 해줄 수 있다는 것을 의미합니다.(어떻게?)
@@ -90,7 +92,7 @@ $$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{
 
 ![kind_fig4](/assets/img/kind/fig4.PNG)
 
-1. Layer Decomposition Net  
+ 1. Layer Decomposition Net  
    하나의 이미지로부터 2개의 구성요소를 복원하는 것은 설정이 잘못된 문제라고 할 수 있습니다. Ground-truth 정보가 없다면, 잘 디자인 된 제한적인 로스가 중요합니다. 따라서, KinD에서는 2개의 다른 빛 세기 / 노출 정도를 가진 이미지 $[I_l,I_h]$를 준비합니다.
    특정 장면의 reflectance는 설 다른 image들에 거쳐 공유해야한다는 것을 생각하면, 분해한 reflectance pair $[R_l,R_h]$는 비슷해야 합니다.  더 나아가서, illumination map $[L_l,L_h]$ 는 각각이 매끄럽고, 서로간에 일관성이 있어야 합니다.
    이를 위해서 논문에서는 Loss ${L_{is}^{LD} := \lVert R_l - R_h\rVert_1 }$ 을 사용하여 반사율 유사도(reflectance similarity)를 정규화합니다.(${\lvert \rvert_1}$ 은 $l_1$ norm을 의미함) 
@@ -117,7 +119,13 @@ $$$I=R \circ L+E= \tilde{R} \circ L = (R+ \tilde{E}) \circ L=R \circ L + \tilde{
 ![kind_fig5](/assets/img/kind/fig5.PNG)
 
  2. Reflectance Restoration Net
-   Low image에서 뽑은 reflectance map들은, Figure 3과 Figure 5에서 보이는 것처럼 밝은 이미지에 비해 degradation의 영향을 더 많이 받습니다. 
+   Low-light image에서 뽑아낸 reflectance는 밝은 이미지에서 뽑아낸 것에 비해 degradation의 영향을 더 많이 받습니다. 지저분한 것에 대해서 clear reflectance가 reference의 역할을 수행할 수 있도록,
+    restoration function을 설정하였고, 식으로 표현하면 다음과 같습니다.<br> $$ \mathcal{L}^{RR}:={\lVert \hat{R}-R_h \rVert}_{2}^{2}-SSIM(\hat{R}, R_h)+  {\lVert \nabla \hat{R}-\nabla R_h \rVert}_{2}^{2} $$<br>
+    여기서 SSIM은 구조적 유사도를 측정하는 함수를 의미하고, $\hat{R}$은 복원된 reflectance에 대응되는 값이며, ${\lVert \cdot \rVert}_2$는 $l^2$ norm(=MSE)을 의미합니다. 이 세 번째 식은 texture간의 유사도를 찾는데 집중하며, 이 subnet의 구조는
+    이전 장에서 소개한 decomposition net과 비슷하지만, 좀 더 깊은(deeper) 구조를 갖고 있습니다. 구조에 대한 묘사는 figrue 2.의 구조 전체 그림에 나와있습니다. 앞서 degradation이 reflectance에서 복잡하게 분포하고 있고, 이는 illumination의 분포와 관련이 있다고 맗한 적이 있습니다.
+    그러므로, illumination 정보를 restoration net에 degraded reflectance와 함께 넣습니다. 이 방법의 효과는 figure 5.에서 확인해 볼 수 있는데 2개의 reflectance map을 다른 degradation level로 넣었을 때, BM3D의 결과는 공평하게 noise를 제거하였습니다.(자연적인 색분포를 고려하지 않고, 일괄적인 적용)
+    <br> 따라서 흐릿함 효과를 넣었던 흔적이 곳곳에 존재합니다. KinD의 경우, 기존의 밝기나 오염이 적었던 창문 영역은 여전히 깨끗하지만, 어두운 영역(병의 문자와 같은)의 경우 보정된 것을 볼 수 있습니다. 게다가, 색의 왜곡 또한 잘 제거되는 것을 볼 수 있습니다.
+    
     
     
 ### Experiments
