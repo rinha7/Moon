@@ -30,9 +30,9 @@ disqus_shortname:   rinha7
 
 # Social
 # if you don't have any of social below, comment the line.
-#google:
+google:
   #plus:            #username
-  #analytics:
+  analytics: G-9NR0XX8S0H
   #verify:
   #ad-client:
   #ad-slot:
